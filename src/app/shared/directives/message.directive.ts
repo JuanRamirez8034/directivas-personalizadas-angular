@@ -8,7 +8,7 @@ export class MessageDirective implements OnInit{
   private _element : HTMLElement;
   private _text : string = 'usa <text="tu mensaje"> para mensaje personalizado';
   private _color : string = '#ff0000';
-  private _hide : boolean = false;
+  private _hide : boolean | null = false;
 
   @Input('text') set text(text:string){
     this._text = text;
@@ -18,7 +18,7 @@ export class MessageDirective implements OnInit{
     this._color = color;
     this.setColor();
   }
-  @Input('hide') set hide(hide:boolean){
+  @Input('hide') set hide(hide:boolean | null){
     this._hide = hide;
     this.setVisible();
   }

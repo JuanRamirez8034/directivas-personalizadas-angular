@@ -1,15 +1,131 @@
-<div class="container p-5 d-flex justify-content-center">
+<div class="container  bg-body bg-opacity-25 p-5 d-flex justify-content-center flex-wrap">
 
-    <form action="" class="w-100 mb-2" style="max-width: 400px; filter:drop-shadow(0 0 0.4rem black)">
+    <form [formGroup]="formulario" class="w-100 mb-2" style="max-width: 400px; filter:drop-shadow(0 0 0.4rem black)">
       <h1 class="fs-5 mb-4 w-100">Ejemplo directiva personalizada</h1>
-      <input type="text" class="form-control mb-1">
+      <input 
+        type="text" 
+        class="form-control mb-1"
+        formControlName="campo"
+        autofocus
+      >
+
       <p 
         class="small"
         form-message
-        text="Este campo es requerido"
-        [hide]="false"
-      >Mensaje error</p>
+        text="Este campo contiene errores"
+        [hide]="campoError"
+      ></p>
+
       <button type="submit" class="btn btn-primary mt-3">Enviar</button>
     </form>
-  
+
+    <div style="max-width: 400px;" class="container-fluid p-2 border-1 rounded-1 shadow bg-danger bg-opacity-10">
+      <hr>
+      <div class="w-100">
+        <h2 class="fs-4">Valido</h2>
+        <p>{{formulario.valid | json}}</p>
+      </div>
+      <hr>
+      <div class="w-100">
+        <h2 class="fs-4">Errores</h2>
+        <p>{{formulario.controls['campo'].errors | json}}</p>
+      </div>
+      <div class="w-100">
+        <h2 class="fs-4">Tocado</h2>
+        <p>{{formulario.controls['campo'].touched | json}}</p>
+      </div>
+      <hr>
+
+    </div>
+    
+    <div *custonNgIf="!campoError"  class="p-3 bg-info bg-opacity-10 mt-5 w-100 shadow d-flex flex-column justify-content-center align-items-center">
+      <p class="text-center">Este contenedor se muestra si hay errores en el formulario, y se usa la directiva estructural personalizada</p>
+      <img src="https://media.giphy.com/media/3o6Zt6ML6BklcajjsA/giphy.gif" class="img-thumbnail" style="max-width: 200px;">
+    </div>
+
+</div>
+<h1>Elemplo codigo mensaje de alerta (directiva)</h1>
+<div class="w-100">
+  <textarea class="w-100 bg-dark text-white-50" style="min-height: 400px;">
+    
+    import { Directive, Input, ElementRef, OnInit, ViewContainerRef } from '@angular/core';
+    @Directive({
+      selector: '[form-message]'
+    })
+    export class MessageDirective implements OnInit{
+      private _element : HTMLElement;
+      private _text : string = 'usa &lt;text="tu mensaje"&gt; para mensaje personalizado';
+      private _color : string = '#ff0000';
+      private _hide : boolean | null = false;
+      @Input('text') set text(text:string){
+        this._text = text;
+        this.setText();
+      }
+      @Input('color') set color(color:string){
+        this._color = color;
+        this.setColor();
+      }
+      @Input('hide') set hide(hide:boolean | null){
+        this._hide = hide;
+        this.setVisible();
+      }
+      // @Input('hideImportant') set hideImportant(hide : boolean){
+      //   if(hide){
+      //     this.ViewContainer.createComponent();
+      //   }else{
+      //     this.ViewContainer.clear();
+      //   }
+      // }
+      constructor(private htmlElement : ElementRef&lt;HTMLElement&gt;, private ViewContainer:ViewContainerRef ) { 
+        this._element = htmlElement.nativeElement;
+        console.log(this._element);
+      }
+      ngOnInit(): void {
+        this.setText();
+        this.setColor();
+        this.setVisible();
+      }
+      private setText():void{
+        this._element.textContent = this._text;
+      }
+      private setColor():void{
+        this._element.style.color = this._color;
+      }
+      private setVisible():void{
+        this._element.style.display = this._hide ? 'none' : 'block';
+      }
+    }
+    
+  </textarea>
+</div>
+
+<hr>
+
+<h1>Elemplo codigo directivas estructurales</h1>
+<div class="w-100">
+  <textarea class="w-100 bg-dark text-white-50" style="min-height: 400px;">
+    import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+    @Directive({
+      selector: '[custonNgIf]'
+    })
+    export class CustonNgIfDirective {
+      
+      @Input('custonNgIf') set custonNgIf(condition : boolean | null){
+        if(condition){
+          this.viewContainer.createEmbeddedView(this.templateRef);
+          return;
+        }
+        this.viewContainer.clear();
+      }
+
+      constructor(
+        private templateRef   : TemplateRef<HTMLAreaElement>,
+        private viewContainer : ViewContainerRef
+      ) { }
+
+    }
+
+    
+  </textarea>
 </div>
